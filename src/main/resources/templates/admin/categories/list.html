@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách danh mục</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .pagination {
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+        }
+
+        .pagination strong {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{admin/fragments/header :: header}"></div>
+
+<div th:replace="~{admin/fragments/nav :: nav}"></div>
+
+<div class="container mt-4">
+    <h2 class="text-center">Danh sách danh mục</h2>
+
+    <div class="text-end mb-3">
+        <a th:href="@{/admin/categories/add}" class="btn btn-success">+ Thêm danh mục</a>
+        <a th:href="@{/admin/home}" class="btn btn-secondary">Quay lại</a>
+    </div>
+
+    <div th:if="${session.message != null}" class="alert alert-info text-center">
+        <span th:text="${session.message}"></span>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>STT</th>
+                    <th>Ảnh Icon</th>
+                    <th>Tên danh mục</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cate, stat : ${cateList}">
+                    <td th:text="${stat.index + 1}"></td>
+                    <td>
+                        <img th:if="${cate.icon != null}" th:src="@{/image(fname=${cate.icon})}"
+                             class="img-fluid img-thumbnail" style="max-width: 80px; max-height: 60px;" alt="icon"/>
+                        <img th:if="${cate.icon == null}" th:src="@{/path/to/default-image.jpg}"
+                             class="img-fluid img-thumbnail" style="max-width: 80px; max-height: 60px;" alt="default icon"/>
+                    </td>
+                    <td th:text="${cate.catename}"></td>
+                    <td>
+                        <a th:href="@{'/admin/categories/edit?id=' + ${cate.cateid}}">Sửa</a> |
+                        <a th:href="@{'/admin/categories/delete?id=' + ${cate.cateid}}"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa?')">Xóa</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ✅ PHÂN TRANG -->
+    <div class="pagination" th:if="${categories.totalPages > 1}">
+        <span th:each="i : ${#numbers.sequence(0, categories.totalPages - 1)}">
+            <span th:if="${i == categories.number}">
+                <strong th:text="${i + 1}"></strong>
+            </span>
+            <a th:if="${i != categories.number}"
+               th:href="@{'?page=' + ${i}}"
+               th:text="${i + 1}"></a>
+        </span>
+    </div>
+</div>
+
+<!-- ✅ Footer -->
+<div th:replace="~{admin/fragments/footer :: footer}"></div>
+
+</body>
+</html>
+	

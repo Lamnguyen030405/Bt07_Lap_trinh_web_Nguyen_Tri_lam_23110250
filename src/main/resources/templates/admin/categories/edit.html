@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa danh mục</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css}">
+</head>
+<body>
+
+<!-- ✅ Header -->
+<div th:replace="~{admin/fragments/header :: header}"></div>
+
+<!-- ✅ Nav -->
+<div th:replace="~{admin/fragments/nav :: nav}"></div>
+
+<div class="container mt-5">
+    <h2>Sửa danh mục</h2>
+
+    <form th:action="@{/admin/categories/edit}" method="post" enctype="multipart/form-data">
+        <!-- ID danh mục (ẩn) -->
+        <input type="hidden" name="id" th:value="${category.cateid}" />
+
+        <!-- Tên danh mục -->
+        <div class="form-group">
+            <label for="name">Tên danh mục:</label>
+            <input type="text" class="form-control" id="name" name="name"
+                   th:value="${category.catename}" required />
+        </div>
+
+        <!-- Ảnh hiện tại -->
+        <div class="form-group">
+            <label>Ảnh hiện tại:</label><br />
+            <img th:src="@{/image(fname=${category.icon})}" alt="Ảnh đại diện"
+                 width="150" class="img-thumbnail mb-2" />
+        </div>
+
+        <!-- Chọn ảnh mới -->
+        <div class="form-group">
+            <label for="icon">Chọn ảnh mới (nếu muốn thay đổi):</label>
+            <input type="file" class="form-control-file" id="icon" name="icon" accept="image/*" />
+        </div>
+
+        <!-- Nút hành động -->
+        <button type="submit" class="btn btn-success">Cập nhật</button>
+        <button type="reset" class="btn btn-secondary">Làm lại</button>
+    </form>
+
+    <!-- Thông báo lỗi -->
+    <div class="alert alert-danger mt-3" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<!-- ✅ Footer -->
+<div th:replace="~{admin/fragments/footer :: footer}"></div>
+
+<!-- JS Bootstrap -->
+<script th:src="@{https://code.jquery.com/jquery-3.5.1.slim.min.js}"></script>
+<script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
