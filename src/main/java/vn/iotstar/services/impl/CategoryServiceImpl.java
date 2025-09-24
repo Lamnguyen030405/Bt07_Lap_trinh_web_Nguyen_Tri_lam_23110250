@@ -158,6 +158,11 @@ public class CategoryServiceImpl implements ICategoryService {
 		categoryRepository.deleteAll(entities);
 	}
 
+	@Override
+	public Optional<CategoryEntity> findByCatename(String name) {
+		return categoryRepository.findByCatename(name);
+	}
+
 	public void deleteAll() {
 		categoryRepository.deleteAll();
 	}

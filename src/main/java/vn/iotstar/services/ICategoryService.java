@@ -81,6 +81,8 @@ public interface ICategoryService {
 	List<CategoryEntity> findByCatenameContaining(String name);
 
 	List<CategoryEntity> findByUserid(int userid);
+
+	Optional<CategoryEntity> findByCatename(String name);
 	
 	
 

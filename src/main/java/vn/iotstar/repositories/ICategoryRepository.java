@@ -2,6 +2,7 @@ package vn.iotstar.repositories;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,6 @@ public interface ICategoryRepository extends JpaRepository<CategoryEntity, Integ
 	Page<CategoryEntity> findByCatenameContaining(String name, Pageable pageable);
 	
 	List<CategoryEntity> findByUserid(int userid);
+	
+	Optional<CategoryEntity> findByCatename(String name);
 }
