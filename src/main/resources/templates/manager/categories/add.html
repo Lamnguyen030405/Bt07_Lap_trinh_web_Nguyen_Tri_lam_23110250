@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{manager/layouts/layout-manager.html}">
+<head>
+	<meta charset="UTF-8">
+	<title>Thêm danh mục</title>
+	<link rel="stylesheet"
+		th:href="@{https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css}">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="container mt-5">
+			<h2>Thêm danh mục mới</h2>
+
+			<!-- Form -->
+			<form th:action="@{/manager/categories/add}" method="post"
+				th:object="${category}" enctype="multipart/form-data">
+
+				<!-- Hiển thị lỗi toàn cục -->
+				<div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+					Vui lòng kiểm tra lại thông tin nhập vào.
+				</div>
+
+				<!-- Tên danh mục -->
+				<div class="form-group">
+					<label for="catename">Tên danh mục:</label>
+					<input type="text" class="form-control" th:field="*{catename}" placeholder="Nhập tên danh mục" />
+					<div class="text-danger" th:if="${#fields.hasErrors('catename')}" th:errors="*{catename}"></div>
+				</div>
+
+				<!-- Ảnh -->
+				<div class="form-group">
+					<label for="icon">Ảnh đại diện:</label>
+					<input type="file" class="form-control-file" id="icon" name="icon" accept="image/*">
+				</div>
+
+				<button type="submit" class="btn btn-success">Thêm</button>
+				<a th:href="@{/manager/categories}" class="btn btn-secondary">Hủy</a>
+			</form>
+		</div>
+	</div>
+
+	<script th:src="@{https://code.jquery.com/jquery-3.5.1.slim.min.js}"></script>
+	<script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

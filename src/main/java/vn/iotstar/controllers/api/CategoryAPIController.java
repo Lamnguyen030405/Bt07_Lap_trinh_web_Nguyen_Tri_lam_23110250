@@ -1,8 +1,14 @@
 package vn.iotstar.controllers.api;
 
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,11 +33,35 @@ public class CategoryAPIController {
 	@Autowired
 	IStorageService storageService;
 
+//	@GetMapping
+//	public ResponseEntity<?> getAllCategory() {
+////		 return ResponseEntity.ok().body(categoryService.findAll());
+//		return new ResponseEntity<ResponseModel>(new ResponseModel(true, "Thành công", categoryService.findAll()),
+//				HttpStatus.OK);
+//	}
+	
 	@GetMapping
-	public ResponseEntity<?> getAllCategory() {
-		// return ResponseEntity.ok().body(categoryService.findAll());
-		return new ResponseEntity<ResponseModel>(new ResponseModel(true, "Thành công", categoryService.findAll()),
-				HttpStatus.OK);
+	public ResponseEntity<?> getAllCategoriesPaged(
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "5") int size) {
+
+	    Pageable pageable = (Pageable) PageRequest.of(page, size, Sort.by("cateid").descending());
+	    Page<CategoryEntity> categories = categoryService.findAll(pageable);
+
+	    return ResponseEntity.ok().body(Map.of(
+	        "status", true,
+	        "message", "Thành công",
+	        "data", categories.getContent(),
+	        "totalPages", categories.getTotalPages(),
+	        "currentPage", categories.getNumber()
+	    ));
+	}
+	
+	@GetMapping("/t")
+	public ResponseEntity<?> getT() {
+		 return ResponseEntity.ok().body(categoryService.findAll());
+		//return new ResponseEntity<ResponseModel>(new ResponseModel(true, "Thành công", categoryService.findAll()),
+				//HttpStatus.OK);
 	}
 
 	@PostMapping(path = "/getCategory")

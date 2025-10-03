@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layouts/layout-manager.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa danh mục</title>
+    <link th:href="@{https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mt-5">
+        <h2>Sửa danh mục</h2>
+
+        <!-- Form sửa danh mục -->
+        <form th:action="@{/manager/categories/edit}" 
+              th:object="${category}" 
+              method="post" 
+              enctype="multipart/form-data">
+
+            <!-- ID (ẩn) -->
+            <input type="hidden" th:field="*{cateid}" />
+
+            <!-- Tên danh mục -->
+            <div class="form-group">
+                <label for="catename">Tên danh mục:</label>
+                <input type="text" th:field="*{catename}" class="form-control" placeholder="Nhập tên danh mục">
+                <div th:if="${#fields.hasErrors('catename')}" class="text-danger" th:errors="*{catename}"></div>
+            </div>
+
+            <!-- Ảnh hiện tại -->
+            <div class="form-group" th:if="*{icon != null}">
+                <label>Ảnh hiện tại:</label><br>
+                <img th:src="@{/image(fname=${category.icon})}" alt="Ảnh đại diện"
+                     width="150" class="img-thumbnail mb-2"/>
+            </div>
+
+            <!-- Chọn ảnh mới -->
+            <div class="form-group">
+                <label for="icon">Chọn ảnh mới (nếu muốn thay đổi):</label>
+                <input type="file" name="icon" class="form-control-file" accept="image/*"/>
+            </div>
+
+            <!-- Nút hành động -->
+            <button type="submit" class="btn btn-success">Cập nhật</button>
+            <a th:href="@{/manager/categories}" class="btn btn-secondary">Hủy</a>
+        </form>
+
+        <!-- Thông báo lỗi -->
+        <div class="alert alert-danger mt-3" th:if="${error}" th:text="${error}"></div>
+    </div>
+</div>
+
+<script th:src="@{https://code.jquery.com/jquery-3.5.1.slim.min.js}"></script>
+<script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

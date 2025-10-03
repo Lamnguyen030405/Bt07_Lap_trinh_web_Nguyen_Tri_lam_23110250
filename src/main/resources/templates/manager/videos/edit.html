@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{manager/layouts/layout-manager.html}">
+<head>
+<meta charset="UTF-8">
+<title>Sửa video</title>
+<link rel="stylesheet"
+	th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css}">
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="container mt-5">
+			<h2>Sửa video</h2>
+
+			<!-- Hiển thị thông báo thành công -->
+			<div th:if="${session.message}" class="alert alert-success" th:text="${session.message}"></div>
+
+			<form th:action="@{/manager/videos/edit}" th:object="${video}"
+				method="post" enctype="multipart/form-data">
+				<input type="hidden" th:field="*{videoid}" />
+
+				<!-- Tiêu đề -->
+				<div class="form-group">
+					<label>Tiêu đề <span class="text-danger">*</span></label> 
+					<input type="text" th:field="*{title}"
+						class="form-control" placeholder="Nhập tiêu đề" />
+					<div class="text-danger" th:if="${#fields.hasErrors('title')}"
+						th:errors="*{title}"></div>
+				</div>
+
+				<!-- Mô tả -->
+				<div class="form-group">
+					<label>Mô tả <span class="text-danger">*</span></label>
+					<textarea th:field="*{description}" class="form-control" rows="4"
+						placeholder="Nhập mô tả"></textarea>
+					<div class="text-danger"
+						th:if="${#fields.hasErrors('description')}"
+						th:errors="*{description}"></div>
+				</div>
+
+				<!-- Category -->
+				<div class="form-group">
+					<label>Category</label> 
+					<select th:field="*{categoryId}" class="form-control">
+						<option value="">Chưa phân loại</option>
+						<option th:each="c : ${categoryList}" 
+							th:value="${c.cateid}"
+							th:text="${c.catename}"></option>
+					</select>
+				</div>
+
+				<!-- Trạng thái -->
+				<div class="form-group form-check">
+					<input type="checkbox" th:field="*{active}"
+						class="form-check-input" id="active" /> 
+					<label class="form-check-label" for="active">Đang hoạt động</label>
+				</div>
+
+				<!-- Số lượt xem (chỉ đọc) -->
+				<div class="form-group">
+					<label>Lượt xem</label>
+					<input type="number" th:field="*{views}" class="form-control" readonly />
+				</div>
+
+				<!-- Poster hiện tại -->
+				<div class="form-group">
+					<label>Ảnh hiện tại</label><br /> 
+					<img th:if="${video.poster != null && !#strings.isEmpty(video.poster)}"
+						th:src="@{/manager/videos/image(fname=${video.poster})}"
+						class="img-thumbnail mb-2" width="200" alt="Video poster" />
+					<div th:if="${video.poster == null || #strings.isEmpty(video.poster)}">Chưa có ảnh</div>
+				</div>
+
+				<!-- Upload poster mới -->
+				<div class="form-group">
+					<label>Chọn ảnh mới (nếu muốn thay đổi)</label> 
+					<input type="file" name="filePoster"
+						class="form-control-file" accept="image/jpeg,image/jpg,image/png,image/gif" />
+					<small class="form-text text-muted">Chỉ chấp nhận file JPG, JPEG, PNG, GIF</small>
+				</div>
+
+				<!-- Buttons -->
+				<button type="submit" class="btn btn-success">
+					<i class="fas fa-save"></i> Cập nhật
+				</button>
+				<a th:href="@{/manager/videos}" class="btn btn-secondary">
+					<i class="fas fa-times"></i> Hủy
+				</a>
+			</form>
+
+			<!-- Hiển thị lỗi -->
+			<div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+		</div>
+	</div>
+
+	<script th:src="@{https://code.jquery.com/jquery-3.5.1.slim.min.js}"></script>
+	<script th:src="@{https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js}"></script>
+	<script th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js}"></script>
+</body>
+</html>

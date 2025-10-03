@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{admin/layouts/layout-admin.html}">
+<head>
+<meta charset="UTF-8">
+<title>Danh sách video</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<style>
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th, td {
+	padding: 10px;
+	border: 1px solid #ccc;
+	text-align: center;
+}
+
+.pagination {
+	margin: 20px auto;
+	text-align: center;
+}
+
+.pagination a {
+	margin: 0 5px;
+	text-decoration: none;
+}
+
+.pagination strong {
+	color: red;
+}
+</style>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="container mt-5">
+			<h2>Danh sách video</h2>
+
+			<div th:if="${message}" class="alert alert-info" th:text="${message}"></div>
+
+			<a th:href="@{/admin/videos/add}" class="btn btn-primary mb-3">Thêm
+				video</a>
+
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Ảnh đại diện</th>
+						<th>Tiêu đề</th>
+						<th>Mô tả</th>
+						<th>Category</th>
+						<th>Trạng thái</th>
+						<th>Lượt xem</th>
+						<th>Hành động</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="video : ${videoList}">
+						<td><img th:src="@{/image(fname=${video.poster})}"
+							width="120" class="img-thumbnail" /></td>
+						<td th:text="${video.title}"></td>
+						<td th:text="${video.description}"></td>
+						<td
+							th:text="${video.category != null ? video.category.catename : 'Chưa phân loại'}"></td>
+						<td
+							th:text="${video.active} ? 'Đang hoạt động' : 'Chưa kích hoạt'"></td>
+						<td th:text="${video.views}"></td>
+						<td><a
+							th:href="@{/admin/videos/edit(videoid=${video.videoid})}"
+							class="btn btn-sm btn-warning">Sửa</a> <a
+							th:href="@{/admin/videos/delete(videoid=${video.videoid})}"
+							class="btn btn-sm btn-danger"
+							onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<!-- Pagination -->
+			<div class="pagination">
+				<ul class="pagination justify-content-center">
+					<li class="page-item" th:if="${videos.hasPrevious()}"><a
+						class="page-link"
+						th:href="@{/admin/videos(page=${videos.number - 1})}">Trước</a></li>
+					<li class="page-item"
+						th:each="i : ${#numbers.sequence(0, videos.totalPages - 1)}"
+						th:classappend="${i == videos.number} ? 'active'"><a
+						class="page-link" th:href="@{/admin/videos(page=${i})}"
+						th:text="${i + 1}"></a></li>
+					<li class="page-item" th:if="${videos.hasNext()}"><a
+						class="page-link"
+						th:href="@{/admin/videos(page=${videos.number + 1})}">Sau</a></li>
+				</ul>
+			</div>
+
+		</div>
+	</div>
+</body>
+</html>

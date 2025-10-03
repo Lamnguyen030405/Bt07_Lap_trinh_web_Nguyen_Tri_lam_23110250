@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class LogoutController {
 
-    @GetMapping("/logout")
+    @GetMapping("/signout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";

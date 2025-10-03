@@ -16,15 +16,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+import jakarta.validation.Valid;
+import vn.iotstar.dto.CategoryDTO;
 import vn.iotstar.entities.CategoryEntity;
 import vn.iotstar.entities.UserEntity;
 import vn.iotstar.services.ICategoryService;
@@ -40,23 +44,29 @@ public class CategoryController {
 
     @GetMapping("add")
     public String add(ModelMap model) {
+        model.addAttribute("category", new CategoryDTO());
         return "admin/categories/add";
     }
 
     @PostMapping("add")
-    public String addPost(@RequestParam("name") String name,
-                          @RequestPart("icon") Part file,
-                          HttpSession session,
-                          ModelMap model) {
+    public String addPost(
+            @ModelAttribute("category") @Valid CategoryDTO categoryDto,
+            BindingResult result,
+            @RequestPart("icon") Part file,
+            HttpSession session,
+            ModelMap model) {
+
+        if (result.hasErrors()) {
+            return "admin/categories/add";
+        }
 
         try {
             CategoryEntity category = new CategoryEntity();
-            category.setCatename(name);
-            
+            category.setCatename(categoryDto.getCatename());
 
             UserEntity user = (UserEntity) session.getAttribute("account");
             if (user == null) {
-                model.addAttribute("error", "Vui lòng đăng nhập trước khi thêm danh mục.");
+                model.addAttribute("error", "Vui lòng đăng nhập.");
                 return "admin/categories/add";
             }
 
@@ -69,7 +79,6 @@ public class CategoryController {
 
             categoryService.save(category);
             return "redirect:/admin/categories";
-
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "Có lỗi xảy ra khi thêm danh mục.");
@@ -82,11 +91,11 @@ public class CategoryController {
                        @RequestParam(name = "page", defaultValue = "0") int page,
                        @RequestParam(name = "size", defaultValue = "5") int size) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("cateid").descending());
-        Page<CategoryEntity> categories = categoryService.findAll(pageable);
-
-        model.addAttribute("cateList", categories.getContent()); // dùng trong <c:forEach>
-        model.addAttribute("categories", categories); // dùng cho phân trang
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("cateid").descending());
+//        Page<CategoryEntity> categories = categoryService.findAll(pageable);
+//
+//        model.addAttribute("cateList", categories.getContent()); // dùng trong <c:forEach>
+//        model.addAttribute("categories", categories); // dùng cho phân trang
         return "admin/categories/list";
     }
 
@@ -124,54 +133,62 @@ public class CategoryController {
 
     @GetMapping("edit")
     public String editForm(@RequestParam("id") int id, ModelMap model) {
-        CategoryEntity category = categoryService.findById(id).orElse(null);
-        if (category == null) {
+        CategoryEntity entity = categoryService.findById(id).orElse(null);
+        if (entity == null) {
             model.addAttribute("error", "Không tìm thấy danh mục.");
             return "redirect:/admin/categories";
         }
-        model.addAttribute("category", category);
+
+        CategoryDTO dto = new CategoryDTO();
+        dto.setCateid(entity.getCateid());
+        dto.setCatename(entity.getCatename());
+        dto.setIcon(entity.getIcon());
+
+        model.addAttribute("category", dto);
         return "admin/categories/edit";
     }
-    
+
     @PostMapping("edit")
     public String editPost(
-            @RequestParam("id") int id,
-            @RequestParam("name") String name,
+            @ModelAttribute("category") @Valid CategoryDTO dto,
+            BindingResult result,
             @RequestPart("icon") Part file,
             HttpSession session,
-            ModelMap model) {
+            ModelMap model) throws IOException {
 
-        try {
-            CategoryEntity category = categoryService.findById(id).orElse(null);
-            if (category == null) {
-                model.addAttribute("error", "Không tìm thấy danh mục để cập nhật.");
-                return "admin/categories/edit";
-            }
-
-            category.setCatename(name);
-
-            // Lấy user từ session
-            UserEntity user = (UserEntity) session.getAttribute("account");
-            if (user != null) {
-                category.setUserid(user.getId());
-            }
-
-            // Nếu người dùng chọn ảnh mới
-            if (file != null && file.getSize() > 0) {
-                String iconPath = UploadUtils.processUploadFile(file, Constant.DIR + "/category");
-                if (iconPath != null) {
-                    category.setIcon(iconPath);
-                }
-            }
-
-            categoryService.save(category); // Gọi lại save để update
-            return "redirect:/admin/categories";
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Có lỗi xảy ra khi cập nhật danh mục.");
+        if (result.hasErrors()) {
             return "admin/categories/edit";
         }
+
+        CategoryEntity category = categoryService.findById(dto.getCateid()).orElse(null);
+        if (category == null) {
+            model.addAttribute("error", "Không tìm thấy danh mục.");
+            return "admin/categories/edit";
+        }
+
+        category.setCatename(dto.getCatename());
+
+        UserEntity user = (UserEntity) session.getAttribute("account");
+        if (user != null) {
+            category.setUserid(user.getId());
+        }
+
+        if (file != null && file.getSize() > 0) {
+            String iconPath = UploadUtils.processUploadFile(file, Constant.DIR + "/category");
+            if (iconPath != null) {
+                category.setIcon(iconPath);
+            }
+        }
+        
+        if (file != null && file.getSize() > 0) {
+            String iconPath = UploadUtils.processUploadFile(file, Constant.DIR + "/category");
+            if (iconPath != null) {
+                category.setIcon(iconPath);
+            }
+        }
+
+        categoryService.save(category);
+        return "redirect:/admin/categories";
     }
     
     @RequestMapping("searchpaginated")

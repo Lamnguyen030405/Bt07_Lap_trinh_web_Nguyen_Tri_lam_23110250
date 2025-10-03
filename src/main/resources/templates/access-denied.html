@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truy cập bị từ chối</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .access-denied-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+        }
+        .error-icon {
+            font-size: 80px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .error-code {
+            font-size: 100px;
+            font-weight: bold;
+            color: #667eea;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .btn-custom {
+            margin: 5px;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="access-denied-card">
+        <div class="error-icon">
+            <i class="fas fa-lock"></i>
+            🔒
+        </div>
+        <div class="error-code">403</div>
+        <div class="error-message">Truy cập bị từ chối</div>
+        
+        <p th:text="${message}" class="text-muted">
+            Bạn không có quyền truy cập trang này!
+        </p>
+        
+        <div class="user-info" th:if="${username}">
+            <strong>Thông tin tài khoản:</strong><br>
+            <span>Username: <strong th:text="${username}"></strong></span><br>
+            <span>Vai trò: <strong th:text="${role}"></strong></span>
+        </div>
+        
+        <div class="mt-4">
+            <a href="javascript:history.back()" class="btn btn-secondary btn-custom">
+                ← Quay lại
+            </a>
+            <a th:href="@{/logout}" class="btn btn-danger btn-custom">
+                Đăng xuất
+            </a>
+            <a th:href="@{/waiting}" class="btn btn-primary btn-custom">
+                Về trang chủ
+            </a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
